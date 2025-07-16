@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gruppenausgaben-Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: #4c51bf;
+            box-shadow: 0 4px 15px rgba(76, 81, 191, 0.3);
+        }
+
+        .section {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+            color: #4c51bf;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: #48bb78;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #38a169;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #f56565;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        .btn-secondary {
+            background: #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #5a67d8;
+        }
+
+        .friend-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .friend-item {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-item {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .participation-section {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .participation-section h3 {
+            margin-bottom: 15px;
+            color: #4c51bf;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .balance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .balance-card {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .balance-card h3 {
+            margin-bottom: 15px;
+            color: #4c51bf;
+        }
+
+        .balance-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .balance-item:last-child {
+            border-bottom: none;
+        }
+
+        .positive {
+            color: #48bb78;
+            font-weight: 600;
+        }
+
+        .negative {
+            color: #f56565;
+            font-weight: 600;
+        }
+
+        .expense-item {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+        }
+
+        .expense-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .expense-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #4c51bf;
+        }
+
+        .expense-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .expense-total {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #48bb78;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            padding: 10px 20px;
+            background: #e2e8f0;
+            margin: 0 5px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .step.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .step.completed {
+            background: #48bb78;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>💰 Gruppenausgaben-Tracker</h1>
+            <p>Einfach Ausgaben verwalten und fair aufteilen</p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-buttons">
+            <button type="button" class="nav-btn active" onclick="showSection('friends')">Freunde</button>
+            <button type="button" class="nav-btn" onclick="showSection('expenses')">Ausgaben</button>
+            <button type="button" class="nav-btn" onclick="showSection('participation')">Beteiligung</button>
+            <button type="button" class="nav-btn" onclick="showSection('balance')">Saldo</button>
+        </div>
+
+        <!-- Freunde verwalten -->
+        <div id="friends" class="section active">
+    <h2>Freunde verwalten</h2>
+
+    <div class="form-group">
+        <label for="friend-name">Name des Freundes:</label>
+        <input type="text" id="friend-name" placeholder="Name eingeben...">
+    </div>
+
+    <button type="button" class="btn" onclick="addFriend()">Freund hinzufügen</button>
+
+    <div id="friends-list" class="friend-list"></div>
+
+    <!-- Export/Import nur in Freunde-Sektion -->
+    <hr style="margin: 30px 0;">
+    <h3>📤 Daten exportieren</h3>
+    <button onclick="downloadDataAsFile()" class="btn">JSON-Datei herunterladen</button>
+
+    <h3 style="margin-top:25px;">📥 Daten importieren</h3>
+    <input type="file" id="import-file" accept=".json" style="display:none" />
+    <button onclick="triggerImport()" class="btn">📥 JSON-Datei importieren</button>
+</div>
+
+
+        <!-- Ausgaben erfassen -->
+        <div id="expenses" class="section">
+            <h2>Neue Ausgabe erfassen</h2>
+            
+            <!-- Schritt-Anzeige -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">1. Grunddaten</div>
+                <div class="step" id="step2">2. Produkte</div>
+            </div>
+
+            <!-- Schritt 1: Grunddaten -->
+            <div id="expense-step1">
+                <div class="form-group">
+                    <label for="expense-title">Titel der Ausgabe:</label>
+                    <input type="text" id="expense-title" placeholder="z.B. Supermarkt Einkauf">
+                </div>
+                <div class="form-group">
+                    <label for="expense-date">Datum:</label>
+                    <input type="date" id="expense-date">
+                </div>
+                <div class="form-group">
+                    <label for="payer-select">Wer hat bezahlt?</label>
+                    <select id="payer-select">
+                        <option value="">Bitte wählen...</option>
+                    </select>
+                </div>
+                <button type="button" class="btn" onclick="nextStep(2)">Weiter zu Produkten</button>
+            </div>
+
+            <!-- Schritt 2: Produkte -->
+            <div id="expense-step2" class="hidden">
+                <div class="form-group">
+                    <label for="product-name">Produktname:</label>
+                    <input type="text" id="product-name" placeholder="z.B. Brot">
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Preis (€):</label>
+                    <input type="number" id="product-price" step="0.01" placeholder="0.00">
+                </div>
+                <button type="button" class="btn" onclick="addProduct()">Produkt hinzufügen</button>
+                <button type="button" class="btn btn-secondary" onclick="nextStep(1)">Zurück</button>
+                
+  <!-- Neu: JSON-Import -->
+  <div class="form-group" style="margin-top:1rem;">
+    <label for="json-products-input">Produkte per JSON importieren:</label>
+    <textarea id="json-products-input"
+              placeholder='[{"name":"Pizza","price":12.5}, {"name":"Getränk","price":3.2}]'
+              rows="4"
+              style="width:100%;"></textarea>
+    <button id="import-json-btn" class="btn btn-primary" type="button">
+      JSON-Import
+    </button>
+  </div>
+
+
+
+                <div id="products-list"></div>
+                
+                <div id="products-actions" class="hidden">
+                    <button type="button" class="btn" onclick="saveExpense()">Ausgabe speichern</button>
+                </div>
+            </div>
+
+            <!-- Gespeicherte Ausgaben -->
+            <div id="saved-expenses">
+                <h3>Gespeicherte Ausgaben</h3>
+                <div id="expenses-list"></div>
+            </div>
+        </div>
+
+        <!-- Beteiligung festlegen -->
+        <div id="participation" class="section">
+            <h2>Beteiligung festlegen</h2>
+            <p>Hier können Sie für alle Ausgaben angeben, an welchen Produkten Sie beteiligt sind:</p>
+            <div id="participation-expenses"></div>
+        </div>
+
+        <!-- Saldo-Übersicht -->
+        <div id="balance" class="section">
+            <h2>Saldo-Übersicht</h2>
+            <div id="balance-content"></div>
+        </div>
+
+
+
+
+
+
+
+
+    <script>
+        // Globale Variablen
+        let friends = [];
+        let expenses = [];
+        let currentProducts = [];
+        let currentStep = 1;
+        let isEditing = false;
+        let editingExpenseId = null;
+
+
+        // DOM Content Loaded Event
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateFriendsList();
+            updateExpensesList();
+            updateParticipationView();
+            updateBalance();
+            
+            // Aktuelles Datum setzen
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('expense-date').value = today;
+            
+            // Zahler-Auswahl initial füllen
+            updatePayerSelect();
+        });
+
+        // Daten aus LocalStorage laden
+        function loadData() {
+            const savedFriends = localStorage.getItem('groupExpenses_friends');
+            const savedExpenses = localStorage.getItem('groupExpenses_expenses');
+            
+            if (savedFriends) {
+                friends = JSON.parse(savedFriends);
+            }
+            
+            if (savedExpenses) {
+                expenses = JSON.parse(savedExpenses);
+            }
+        }
+
+        // Daten in LocalStorage speichern
+        function saveData() {
+            localStorage.setItem('groupExpenses_friends', JSON.stringify(friends));
+            localStorage.setItem('groupExpenses_expenses', JSON.stringify(expenses));
+        }
+
+        // Navigation zwischen Sektionen
+        function showSection(sectionId) {
+            // Alle Sektionen ausblenden
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Alle Nav-Buttons deaktivieren
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Gewählte Sektion anzeigen
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Entsprechenden Nav-Button aktivieren
+            const activeBtn = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            // Spezielle Aktionen für bestimmte Sektionen
+            if (sectionId === 'balance') {
+                updateBalance();
+            } else if (sectionId === 'participation') {
+                updateParticipationView();
+            }
+        }
+
+        // Freund hinzufügen
+        function addFriend() {
+            const nameInput = document.getElementById('friend-name');
+            const name = nameInput.value.trim();
+            
+            if (name === '') {
+                alert('Bitte einen Namen eingeben.');
+                return;
+            }
+            
+            if (friends.includes(name)) {
+                alert('Dieser Freund existiert bereits.');
+                return;
+            }
+            
+            friends.push(name);
+            nameInput.value = '';
+            updateFriendsList();
+            updatePayerSelect();
+            saveData();
+        }
+
+        // Freund entfernen
+        function removeFriend(friendName) {
+            if (confirm(`Möchten Sie ${friendName} wirklich entfernen?`)) {
+                friends = friends.filter(friend => friend !== friendName);
+                updateFriendsList();
+                updatePayerSelect();
+                saveData();
+            }
+        }
+
+        // Freundesliste aktualisieren
+        function updateFriendsList() {
+            const friendsList = document.getElementById('friends-list');
+            friendsList.innerHTML = '';
+            
+            friends.forEach(friend => {
+                const friendItem = document.createElement('div');
+                friendItem.className = 'friend-item';
+                friendItem.innerHTML = `
+                    <span>${friend}</span>
+                    <button type="button" class="btn btn-danger" onclick="removeFriend('${friend}')">Entfernen</button>
+                `;
+                friendsList.appendChild(friendItem);
+            });
+        }
+
+        // Schritte in der Ausgaben-Erfassung
+        function nextStep(step) {
+            if (step === 2) {
+                // Validierung für Schritt 1
+                const title = document.getElementById('expense-title').value.trim();
+                const date = document.getElementById('expense-date').value;
+                const payer = document.getElementById('payer-select').value;
+                
+                if (!title || !date || !payer) {
+                    alert('Bitte alle Felder ausfüllen.');
+                    return;
+                }
+            }
+            
+            // Schritte ausblenden
+            for (let i = 1; i <= 2; i++) {
+                document.getElementById(`expense-step${i}`).classList.add('hidden');
+                document.getElementById(`step${i}`).classList.remove('active', 'completed');
+            }
+            
+            // Aktuellen Schritt anzeigen
+            document.getElementById(`expense-step${step}`).classList.remove('hidden');
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            // Vorherige Schritte als abgeschlossen markieren
+            for (let i = 1; i < step; i++) {
+                document.getElementById(`step${i}`).classList.add('completed');
+            }
+            
+            currentStep = step;
+        }
+
+        // Produkt hinzufügen
+function addProduct() {
+    const nameInput  = document.getElementById('product-name');
+    const priceInput = document.getElementById('product-price');
+    
+    const name  = nameInput.value.trim();
+    const price = parseFloat(priceInput.value);
+    
+    if (!name || !price || price <= 0) {
+        alert('Bitte gültigen Produktnamen und Preis eingeben.');
+        return;
+    }
+    
+    const product = {
+        id:    Date.now(),
+        name,
+        price
+    };
+    
+    currentProducts.push(product);
+    nameInput.value  = '';
+    priceInput.value = '';
+    
+    updateProductsList();
+}
+
+// Produkt entfernen (unverändert)
+function removeProduct(productId) {
+    currentProducts = currentProducts.filter(p => p.id !== productId);
+    updateProductsList();
+}
+
+// Produktliste aktualisieren (unverändert)
+function updateProductsList() {
+    const productsList = document.getElementById('products-list');
+    productsList.innerHTML = '';
+    
+    if (currentProducts.length === 0) {
+        document.getElementById('products-actions').classList.add('hidden');
+        return;
+    }
+    
+    document.getElementById('products-actions').classList.remove('hidden');
+    
+    currentProducts.forEach(product => {
+        const productItem = document.createElement('div');
+        productItem.className = 'product-item';
+        productItem.innerHTML = `
+            <div class="product-info">
+                <strong>${product.name}</strong> – ${product.price.toFixed(2)}€
+            </div>
+            <button type="button" class="btn btn-danger"
+                    onclick="removeProduct(${product.id})">Entfernen</button>
+            <button class="btn btn-secondary"
+                    onclick="editProduct(${product.id})">Bearbeiten</button>
+        `;
+        productsList.appendChild(productItem);
+    });
+}
+
+// —— NEU: JSON-Import-Handler ——
+// Erlaubt, per JSON-Array mehrere Produkte auf einmal hinzuzufügen.
+// Muss nach updateProductsList() geladen werden.
+document
+  .getElementById('import-json-btn')
+  .addEventListener('click', () => {
+    const raw = document.getElementById('json-products-input').value;
+    let list;
+    try {
+      list = JSON.parse(raw);
+      if (!Array.isArray(list)) {
+        throw new Error('Erwartetes Array von Objekten');
+      }
+    } catch (err) {
+      alert('JSON-Parsing-Fehler: ' + err.message);
+      return;
+    }
+
+    list.forEach(item => {
+      if (
+        typeof item.name  !== 'string' ||
+        typeof item.price !== 'number' ||
+        item.price <= 0
+      ) {
+        console.warn('Überspringe ungültiges Produkt:', item);
+        return;
+      }
+      currentProducts.push({
+        id:    Date.now() + Math.random(),
+        name:  item.name.trim(),
+        price: item.price
+      });
+    });
+
+    updateProductsList();
+    document.getElementById('json-products-input').value = '';
+  });
+
+function editProduct(productId) {
+  const prod = currentProducts.find(p => p.id === productId);
+  document.getElementById('product-name').value  = prod.name;
+  document.getElementById('product-price').value = prod.price;
+  // aus der Liste entfernen, damit addProduct() neu anlegt
+  removeProduct(productId);
+}
+
+
+        // Zahler-Auswahl aktualisieren
+        function updatePayerSelect() {
+            const payerSelect = document.getElementById('payer-select');
+            payerSelect.innerHTML = '<option value="">Bitte wählen...</option>';
+            
+            friends.forEach(friend => {
+                const option = document.createElement('option');
+                option.value = friend;
+                option.textContent = friend;
+                payerSelect.appendChild(option);
+            });
+        }
+
+        // Beteiligungsansicht aktualisieren
+        function updateParticipationView() {
+            const participationExpenses = document.getElementById('participation-expenses');
+            participationExpenses.innerHTML = '';
+            
+            if (expenses.length === 0) {
+                participationExpenses.innerHTML = '<p>Noch keine Ausgaben vorhanden.</p>';
+                return;
+            }
+            
+            expenses.forEach(expense => {
+                const expenseDiv = document.createElement('div');
+                expenseDiv.className = 'expense-item';
+                
+                let expenseHtml = `
+                    <div class="expense-header">
+                        <div class="expense-title">${expense.title}</div>
+                        <div class="expense-date">${expense.date}</div>
+                        <div class="expense-total">${expense.total.toFixed(2)}€</div>
+                    </div>
+                    <div><strong>Bezahlt von:</strong> ${expense.payer}</div>
+                    <div><strong>Produkte:</strong></div>
+                `;
+                
+                expense.products.forEach(product => {
+                    expenseHtml += `
+                        <div class="participation-section">
+                            <h3>${product.name} (${product.price.toFixed(2)}€)</h3>
+                            <div class="checkbox-group">
+                    `;
+                    
+                    friends.forEach(friend => {
+                        const isChecked = product.participants.includes(friend);
+                        expenseHtml += `
+                            <div class="checkbox-item">
+                                <input type="checkbox" 
+                                       id="participation-${expense.id}-${product.id}-${friend}"
+                                       ${isChecked ? 'checked' : ''}
+                                       onchange="updateParticipation(${expense.id}, ${product.id}, '${friend}', this.checked)">
+                                <label for="participation-${expense.id}-${product.id}-${friend}">${friend}</label>
+                            </div>
+                        `;
+                    });
+                    
+                    expenseHtml += `
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                expenseDiv.innerHTML = expenseHtml;
+                participationExpenses.appendChild(expenseDiv);
+            });
+        }
+
+        // Beteiligung aktualisieren
+        function updateParticipation(expenseId, productId, friendName, isParticipating) {
+            const expense = expenses.find(e => e.id === expenseId);
+            if (!expense) return;
+            
+            const product = expense.products.find(p => p.id === productId);
+            if (!product) return;
+            
+            if (isParticipating) {
+                if (!product.participants.includes(friendName)) {
+                    product.participants.push(friendName);
+                }
+            } else {
+                product.participants = product.participants.filter(p => p !== friendName);
+            }
+            
+            saveData();
+        }
+
+// Ausgabe speichern
+function saveExpense() {
+  // 1. Formularwerte einlesen
+  const title = document.getElementById('expense-title').value.trim();
+  const date  = document.getElementById('expense-date').value;
+  const payer = document.getElementById('payer-select').value;
+
+  // 2. Validierung
+  if (!title) {
+    alert('Bitte einen Titel eingeben.');
+    return;
+  }
+  if (!date) {
+    alert('Bitte ein Datum auswählen.');
+    return;
+  }
+  if (!payer) {
+    alert('Bitte einen Zahler auswählen.');
+    return;
+  }
+
+  // 3. Expense-ID und Total berechnen
+  const expenseId = isEditing ? editingExpenseId : Date.now();
+  const total     = currentProducts.reduce((sum, p) => sum + p.price, 0);
+
+  // 4. Produkte mit vorhandenen Teilnehmern zusammenführen
+  const products = currentProducts.map(p => {
+    const originalExpense = expenses.find(e => e.id === expenseId);
+    const originalProduct = originalExpense
+      ? originalExpense.products.find(op => op.id === p.id)
+      : null;
+
+    return {
+      id:           p.id,
+      name:         p.name,
+      price:        p.price,
+      participants: originalProduct
+        ? [...originalProduct.participants]
+        : []
+    };
+  });
+
+  const updatedExpense = {
+    id:         expenseId,
+    title,
+    date,
+    payer,
+    products,
+    total
+  };
+
+  // 5. In Liste einfügen oder ersetzen
+  if (isEditing) {
+    expenses = expenses.map(e =>
+      e.id === expenseId ? updatedExpense : e
+    );
+  } else {
+    expenses.push(updatedExpense);
+  }
+
+  // 6. Bearbeitungszustand zurücksetzen
+  isEditing         = false;
+  editingExpenseId  = null;
+
+  // 7. UI aktualisieren und speichern
+  updateExpensesList();
+  updateParticipationView();
+  saveData();
+
+  alert('Ausgabe erfolgreich gespeichert.');
+}
+
+
+        // Ausgabe entfernen
+        function removeExpense(expenseId) {
+            if (confirm('Möchten Sie diese Ausgabe wirklich entfernen?')) {
+                expenses = expenses.filter(expense => expense.id !== expenseId);
+                updateExpensesList();
+                updateParticipationView();
+                saveData();
+            }
+        }
+
+        // Ausgabenliste aktualisieren
+        function updateExpensesList() {
+            const expensesList = document.getElementById('expenses-list');
+            expensesList.innerHTML = '';
+            
+            if (expenses.length === 0) {
+                expensesList.innerHTML = '<p>Noch keine Ausgaben erfasst.</p>';
+                return;
+            }
+            
+            expenses.forEach(expense => {
+                const expenseItem = document.createElement('div');
+                expenseItem.className = 'expense-item';
+                
+                const productsHtml = expense.products.map(product => 
+                    `<div>${product.name} (${product.price.toFixed(2)}€) - Teilnehmer: ${product.participants.join(', ')}</div>`
+                ).join('');
+                
+                expenseItem.innerHTML = `
+                    <div class="expense-header">
+                        <div class="expense-title">${expense.title}</div>
+                        <div class="expense-date">${expense.date}</div>
+                        <div class="expense-total">${expense.total.toFixed(2)}€</div>
+                    </div>
+                    <div><strong>Bezahlt von:</strong> ${expense.payer}</div>
+                    <div><strong>Produkte:</strong></div>
+                    <div>${productsHtml}</div>
+                    <button type="button" class="btn btn-danger" onclick="removeExpense(${expense.id})">Entfernen</button>
+                    <button class="btn btn-secondary" onclick="editExpense(${expense.id})">Bearbeiten</button>
+                `;
+                
+                expensesList.appendChild(expenseItem);
+            });
+        }
+
+      function editExpense(expenseId) {
+        const expense = expenses.find(e => e.id === expenseId);
+        if (!expense) return;
+        // Formularfelder füllen
+        document.getElementById('expense-title').value = expense.title;
+        document.getElementById('expense-date').value  = expense.date;
+        document.getElementById('payer-select').value  = expense.payer;
+        // Produkte kopieren
+        currentProducts = expense.products.map(p => ({ ...p }));
+        updateProductsList();
+        // Status setzen
+        isEditing = true;
+        editingExpenseId = expenseId;
+        // Zur Produkterfassung wechseln
+        nextStep(2);
+      }
+
+
+
+        // Saldo-Übersicht aktualisieren
+        function updateBalance() {
+            const balanceContent = document.getElementById('balance-content');
+            
+            if (expenses.length === 0 || friends.length === 0) {
+                balanceContent.innerHTML = '<p>Keine Daten für Saldo-Berechnung verfügbar.</p>';
+                return;
+            }
+            
+            // Saldo für jeden Freund berechnen
+            const balances = {};
+            friends.forEach(friend => {
+                balances[friend] = 0;
+            });
+            
+            expenses.forEach(expense => {
+                // Zahler hat erstmal alles bezahlt
+                balances[expense.payer] += expense.total;
+                
+                // Für jedes Produkt die Kosten auf die Teilnehmer aufteilen
+                expense.products.forEach(product => {
+                    const costPerPerson = product.price / product.participants.length;
+                    product.participants.forEach(participant => {
+                        balances[participant] -= costPerPerson;
+                    });
+                });
+            });
+            
+            // Schulden zwischen Freunden berechnen
+            const positiveBalances = [];
+            const negativeBalances = [];
+            
+            Object.entries(balances).forEach(([friend, balance]) => {
+                if (balance > 0.01) {
+                    positiveBalances.push({ friend, amount: balance });
+                } else if (balance < -0.01) {
+                    negativeBalances.push({ friend, amount: Math.abs(balance) });
+                }
+            });
+            
+            // Ausgleichsvorschläge generieren
+            const settlements = [];
+            let i = 0, j = 0;
+            
+            while (i < positiveBalances.length && j < negativeBalances.length) {
+                const creditor = positiveBalances[i];
+                const debtor = negativeBalances[j];
+                
+                const settlementAmount = Math.min(creditor.amount, debtor.amount);
+                
+                settlements.push({
+                    from: debtor.friend,
+                    to: creditor.friend,
+                    amount: settlementAmount
+                });
+                
+                creditor.amount -= settlementAmount;
+                debtor.amount -= settlementAmount;
+                
+                if (creditor.amount <= 0.01) i++;
+                if (debtor.amount <= 0.01) j++;
+            }
+            
+            // HTML generieren
+            let html = '<div class="balance-grid">';
+            
+            // Einzelne Salden
+            html += '<div class="balance-card"><h3>Einzelne Salden</h3>';
+            Object.entries(balances).forEach(([friend, balance]) => {
+                const balanceClass = balance > 0.01 ? 'positive' : balance < -0.01 ? 'negative' : '';
+                const balanceText = balance > 0.01 ? `+${balance.toFixed(2)}€` : 
+                                   balance < -0.01 ? `-${Math.abs(balance).toFixed(2)}€` : '0.00€';
+                html += `<div class="balance-item">
+                    <span>${friend}</span>
+                    <span class="${balanceClass}">${balanceText}</span>
+                </div>`;
+            });
+            html += '</div>';
+            
+            // Ausgleichsvorschläge
+            html += '<div class="balance-card"><h3>Ausgleichsvorschläge</h3>';
+            if (settlements.length === 0) {
+                html += '<div class="balance-item"><span>Alle Ausgaben sind ausgeglichen!</span></div>';
+            } else {
+                settlements.forEach(settlement => {
+                    html += `<div class="balance-item">
+                        <span>${settlement.from} → ${settlement.to}</span>
+                        <span class="negative">${settlement.amount.toFixed(2)}€</span>
+                    </div>`;
+                });
+            }
+            html += '</div>';
+            
+            html += '</div>';
+            
+            balanceContent.innerHTML = html;
+        }
+
+// ——— JSON EXPORT / IMPORT MIT DATEI ———
+
+    function downloadDataAsFile() {
+      const data = {
+        friends,
+        expenses
+      };
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'gruppenausgaben.json';
+      link.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+  function triggerImport() {
+  const fileInput = document.getElementById('import-file');
+  fileInput.click();
+}
+
+// automatisch importieren, sobald Datei gewählt wird
+document.getElementById('import-file').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data.friends) || !Array.isArray(data.expenses)) {
+        throw new Error("Erwarte Felder: friends[], expenses[]");
+      }
+
+      data.friends.forEach(name => {
+        if (!friends.includes(name)) {
+          friends.push(name);
+        }
+      });
+
+      const existingIds = new Set(expenses.map(e => e.id));
+      const newExpenses = data.expenses.filter(e => !existingIds.has(e.id));
+      expenses = expenses.concat(newExpenses);
+
+      saveData();
+      updateFriendsList();
+      updateExpensesList();
+      updateParticipationView();
+      updateBalance();
+      updatePayerSelect();
+
+      alert(`Import abgeschlossen: ${data.friends.length} Freund(e), ${newExpenses.length} neue Ausgabe(n) hinzugefügt.`);
+    } catch (err) {
+      alert("Fehler beim Import: " + err.message);
+    } finally {
+      e.target.value = ""; // ermöglicht erneuten Upload derselben Datei
+    }
+  };
+  reader.readAsText(file);
+});
+    </script>
+</body>
+</html>
