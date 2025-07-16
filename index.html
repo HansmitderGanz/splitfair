@@ -302,9 +302,12 @@
         }
 
         .step.completed {
-            background: #48bb78;
-            color: white;
-        }
+    background: #ddd;
+    color: #888;
+    font-weight: normal;
+    cursor: default;
+}
+
     </style>
 </head>
 <body>
@@ -336,14 +339,12 @@
 
     <div id="friends-list" class="friend-list"></div>
 
-    <!-- Export/Import nur in Freunde-Sektion -->
-    <hr style="margin: 30px 0;">
-    <h3>📤 Daten exportieren</h3>
-    <button onclick="downloadDataAsFile()" class="btn">JSON-Datei herunterladen</button>
+    <!-- Import nur in Freunde-Sektion -->
+    
 
     <h3 style="margin-top:25px;">📥 Daten importieren</h3>
     <input type="file" id="import-file" accept=".json" style="display:none" />
-    <button onclick="triggerImport()" class="btn">📥 JSON-Datei importieren</button>
+    <button onclick="triggerImport()" class="btn">JSON-Datei importieren</button>
 </div>
 
 
@@ -387,7 +388,7 @@
                     <input type="number" id="product-price" step="0.01" placeholder="0.00">
                 </div>
                 <button type="button" class="btn" onclick="addProduct()">Produkt hinzufügen</button>
-                <button type="button" class="btn btn-secondary" onclick="nextStep(1)">Zurück</button>
+                <button type="button" class="btn btn-secondary" onclick="nextStep(1)">Zurück zu Ausgaben</button>
                 
   <!-- Neu: JSON-Import -->
   <div class="form-group" style="margin-top:1rem;">
@@ -397,7 +398,7 @@
               rows="4"
               style="width:100%;"></textarea>
     <button id="import-json-btn" class="btn btn-primary" type="button">
-      JSON-Import
+      Produktliste importieren
     </button>
   </div>
 
@@ -428,7 +429,13 @@
         <div id="balance" class="section">
             <h2>Saldo-Übersicht</h2>
             <div id="balance-content"></div>
+
+            <hr style="margin: 30px 0;">
+    <h3>📤 Daten exportieren</h3>
+    <button onclick="downloadDataAsFile()" class="btn">JSON-Datei herunterladen</button>
+
         </div>
+
 
 
 
@@ -848,14 +855,15 @@ function saveExpense() {
   isEditing         = false;
   editingExpenseId  = null;
 
-  // 7. UI aktualisieren und speichern
-  updateExpensesList();
-  updateParticipationView();
-  saveData();
+// 7. UI aktualisieren und speichern
+    currentProducts = [];                      // ← LEERT die Produktsammlung
+    updateProductsList();                      // ← aktualisiert die Anzeige
+    updateExpensesList();
+    updateParticipationView();
+    saveData();
 
-  alert('Ausgabe erfolgreich gespeichert.');
+    alert('Ausgabe erfolgreich gespeichert.');
 }
-
 
         // Ausgabe entfernen
         function removeExpense(expenseId) {
