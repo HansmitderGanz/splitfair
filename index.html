@@ -38,6 +38,13 @@
             margin-bottom: 10px;
         }
 
+.hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+
+
         .nav-buttons {
             display: flex;
             justify-content: center;
@@ -308,6 +315,187 @@
     cursor: default;
 }
 
+
+
+.swipe-mode-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.swipe-interface {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.person-selector {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.person-selector select {
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 2px solid #667eea;
+    background: white;
+    color: #333;
+}
+
+.swipe-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.swipe-card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.swipe-card.dragging {
+    cursor: grabbing;
+    transition: none;
+}
+
+.swipe-card.swiped-right {
+    transform: translateX(100%) rotate(30deg);
+    opacity: 0;
+}
+
+.swipe-card.swiped-left {
+    transform: translateX(-100%) rotate(-30deg);
+    opacity: 0;
+}
+
+.card-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.card-expense-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+.card-product-name {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.card-product-price {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+.card-instructions {
+    font-size: 0.9em;
+    opacity: 0.8;
+    margin-top: 20px;
+}
+
+.swipe-indicators {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3em;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.swipe-indicators.left {
+    left: 20px;
+    color: #f56565;
+}
+
+.swipe-indicators.right {
+    right: 20px;
+    color: #48bb78;
+}
+
+.swipe-indicators.show {
+    opacity: 1;
+}
+
+.swipe-progress {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #666;
+}
+
+.swipe-complete {
+    text-align: center;
+    padding: 40px;
+    color: #48bb78;
+}
+
+.swipe-complete h3 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.action-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn.reject {
+    background: #f56565;
+    color: white;
+}
+
+.action-btn.accept {
+    background: #48bb78;
+    color: white;
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+}
+
+
     </style>
 </head>
 <body>
@@ -418,12 +606,44 @@
             </div>
         </div>
 
-        <!-- Beteiligung festlegen -->
-        <div id="participation" class="section">
-            <h2>Beteiligung festlegen</h2>
-            <p>Hier können Sie für alle Ausgaben angeben, an welchen Produkten Sie beteiligt sind:</p>
-            <div id="participation-expenses"></div>
+<div id="participation" class="section">
+    <h2>Beteiligung festlegen</h2>
+    <p>Hier können Sie für alle Ausgaben angeben, an welchen Produkten Sie beteiligt sind:</p>
+    
+    <div class="swipe-mode-toggle">
+        <button type="button" class="nav-btn active" onclick="showParticipationMode('classic')">Liste</button>
+        <button type="button" class="nav-btn" onclick="showParticipationMode('swipe')">Cards</button>
+    </div>
+
+    <div id="participation-classic" class="participation-mode">
+        <div id="participation-expenses"></div>
+    </div>
+
+    <div id="participation-swipe" class="participation-mode" style="display: none;">
+        <div class="swipe-interface">
+            <div class="person-selector">
+                <label for="swipe-person-select">Für welche Person:</label>
+                <select id="swipe-person-select">
+                    <option value="">Bitte wählen...</option>
+                </select>
+            </div>
+            
+            <div id="swipe-container" class="swipe-container">
+                <!-- Swipe cards werden hier dynamisch eingefügt -->
+            </div>
+            
+            <div class="swipe-indicators left">✗</div>
+            <div class="swipe-indicators right">✓</div>
+            
+            <div id="swipe-progress" class="swipe-progress"></div>
+            
+            <div class="action-buttons hidden">
+                <button class="action-btn reject" onclick="swipeCard('left')" title="Nicht beteiligt">✗</button>
+                <button class="action-btn accept" onclick="swipeCard('right')" title="Beteiligt">✓</button>
+            </div>
         </div>
+    </div>
+</div>
 
         <!-- Saldo-Übersicht -->
         <div id="balance" class="section">
@@ -452,6 +672,14 @@
         let currentStep = 1;
         let isEditing = false;
         let editingExpenseId = null;
+        let currentSwipeMode = 'classic';
+let swipeProducts = [];
+let currentSwipeIndex = 0;
+let currentSwipePerson = '';
+let isDragging = false;
+let startX = 0;
+let currentX = 0;
+let initialTransform = 0;
 
 
         // DOM Content Loaded Event
@@ -926,6 +1154,342 @@ function saveExpense() {
         // Zur Produkterfassung wechseln
         nextStep(2);
       }
+
+
+// Beteiligungsmodus wechseln
+function showParticipationMode(mode) {
+    currentSwipeMode = mode;
+    
+    // Toggle buttons
+    document.querySelectorAll('.swipe-mode-toggle .nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[onclick="showParticipationMode('${mode}')"]`).classList.add('active');
+    
+    // Toggle views
+    document.getElementById('participation-classic').style.display = mode === 'classic' ? 'block' : 'none';
+    document.getElementById('participation-swipe').style.display = mode === 'swipe' ? 'block' : 'none';
+    
+if (mode === 'swipe') {
+    currentSwipePerson = '';
+    document.getElementById('swipe-person-select').value = '';
+    swipeProducts = [];
+    currentSwipeIndex = 0;
+    initializeSwipeInterface();
+    renderSwipeCards(); // ← DAS FEHLTE!
+}
+
+}
+
+// Swipe-Interface initialisieren
+function initializeSwipeInterface() {
+    updateSwipePersonSelect();
+
+    const personSelect = document.getElementById('swipe-person-select');
+
+    personSelect.removeEventListener('change', handleSwipePersonChange); // zur Sicherheit
+    personSelect.addEventListener('change', handleSwipePersonChange);
+}
+
+function handleSwipePersonChange() {
+    currentSwipePerson = this.value;
+    if (currentSwipePerson) {
+        setupSwipeCards();
+    } else {
+        // Wenn Auswahl gelöscht wird
+        document.getElementById('swipe-container').innerHTML = '';
+        document.getElementById('swipe-progress').textContent = '';
+    }
+}
+
+
+// Personen-Auswahl für Swipe-Modus aktualisieren
+function updateSwipePersonSelect() {
+    const select = document.getElementById('swipe-person-select');
+    select.innerHTML = '<option value="">Bitte wählen...</option>';
+    
+    friends.forEach(friend => {
+        const option = document.createElement('option');
+        option.value = friend;
+        option.textContent = friend;
+        select.appendChild(option);
+    });
+}
+
+// Swipe-Karten vorbereiten
+function setupSwipeCards() {
+    if (!currentSwipePerson) return;
+
+    swipeProducts = [];
+
+    expenses.forEach(expense => {
+        expense.products.forEach(product => {
+            const alreadyDecided = product._decided && currentSwipePerson in product._decided;
+            if (!alreadyDecided) {
+                swipeProducts.push({
+                    expenseId: expense.id,
+                    expenseTitle: expense.title,
+                    productId: product.id,
+                    productName: product.name,
+                    productPrice: product.price,
+                    isParticipating: product.participants.includes(currentSwipePerson)
+                });
+            }
+        });
+    });
+
+    currentSwipeIndex = 0;
+    renderSwipeCards();
+}
+
+
+// Swipe-Karten rendern
+function renderSwipeCards() {
+    const select = document.getElementById('swipe-person-select');
+    const person = select?.value?.trim();
+
+    const container = document.getElementById('swipe-container');
+    const progressElement = document.getElementById('swipe-progress');
+    const buttonWrapper = document.querySelector('.action-buttons');
+
+    // Kein Nutzer gewählt → alles zurücksetzen
+    if (!person) {
+        currentSwipePerson = '';
+        swipeProducts = [];
+        currentSwipeIndex = 0;
+
+        container.innerHTML = '';
+        progressElement.textContent = '';
+        buttonWrapper.classList.add('hidden');  // Buttons ausblenden
+        return;
+    }
+
+    currentSwipePerson = person;
+    container.innerHTML = '';
+
+    // Keine offenen Produkte
+    if (swipeProducts.length === 0) {
+        container.innerHTML = `
+            <div class="swipe-complete">
+                <h3>Keine Produkte verfügbar</h3>
+            </div>
+        `;
+        progressElement.textContent = '';
+        buttonWrapper.classList.add('hidden');
+        return;
+    }
+
+    // Alle Produkte geswipet
+    if (currentSwipeIndex >= swipeProducts.length) {
+        container.innerHTML = `
+            <div class="swipe-complete">
+                <h3>🎉 Fertig!</h3>
+                <p>Alle Beteiligungen für ${currentSwipePerson} wurden festgelegt.</p>
+            </div>
+        `;
+        updateProgress();
+        buttonWrapper.classList.add('hidden');
+        return;
+    }
+
+    // Aktuelle und nachfolgende Swipe-Karten anzeigen
+    for (let i = 0; i < Math.min(3, swipeProducts.length - currentSwipeIndex); i++) {
+        const productIndex = currentSwipeIndex + i;
+        const product = swipeProducts[productIndex];
+
+        const card = document.createElement('div');
+        card.className = 'swipe-card';
+        card.style.zIndex = 10 - i;
+        card.style.transform = `scale(${1 - i * 0.05}) translateY(${i * 10}px)`;
+
+        if (i === 0) {
+            addSwipeEventListeners(card);
+        }
+
+        card.innerHTML = `
+            <div class="card-content">
+                <div class="card-expense-title">${product.expenseTitle}</div>
+                <div class="card-product-name">${product.productName}</div>
+                <div class="card-product-price">${product.productPrice.toFixed(2)}€</div>
+                <div class="card-instructions">
+                    ← Nicht beteiligt &nbsp;&nbsp;&nbsp; Beteiligt →
+                </div>
+            </div>
+        `;
+
+        container.appendChild(card);
+    }
+
+    updateProgress();
+    buttonWrapper.classList.remove('hidden'); // Buttons einblenden
+}
+
+
+
+
+// Swipe Event-Listener hinzufügen
+function addSwipeEventListeners(card) {
+    // Mouse Events
+    card.addEventListener('mousedown', handleStart);
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleEnd);
+    
+    // Touch Events
+    card.addEventListener('touchstart', handleStart);
+    document.addEventListener('touchmove', handleMove);
+    document.addEventListener('touchend', handleEnd);
+}
+
+// Swipe-Start behandeln
+function handleStart(e) {
+    isDragging = true;
+    startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+    currentX = startX;
+    
+    const card = e.currentTarget;
+    card.classList.add('dragging');
+    
+    e.preventDefault();
+}
+
+// Swipe-Bewegung behandeln
+function handleMove(e) {
+    if (!isDragging) return;
+    
+    currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+    const deltaX = currentX - startX;
+    
+    const card = document.querySelector('.swipe-card.dragging');
+    if (!card) return;
+    
+    const rotation = deltaX * 0.1;
+    const opacity = Math.max(0.3, 1 - Math.abs(deltaX) / 300);
+    
+    card.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
+    card.style.opacity = opacity;
+    
+    // Indikatoren anzeigen
+    const leftIndicator = document.querySelector('.swipe-indicators.left');
+    const rightIndicator = document.querySelector('.swipe-indicators.right');
+    
+    if (deltaX < -50) {
+        leftIndicator.classList.add('show');
+        rightIndicator.classList.remove('show');
+    } else if (deltaX > 50) {
+        rightIndicator.classList.add('show');
+        leftIndicator.classList.remove('show');
+    } else {
+        leftIndicator.classList.remove('show');
+        rightIndicator.classList.remove('show');
+    }
+    
+    e.preventDefault();
+}
+
+// Swipe-Ende behandeln
+function handleEnd(e) {
+    if (!isDragging) return;
+    
+    isDragging = false;
+    const deltaX = currentX - startX;
+    
+    const card = document.querySelector('.swipe-card.dragging');
+    if (!card) return;
+    
+    card.classList.remove('dragging');
+    
+    // Indikatoren ausblenden
+    document.querySelectorAll('.swipe-indicators').forEach(indicator => {
+        indicator.classList.remove('show');
+    });
+    
+    // Entscheidung basierend auf Swipe-Distanz
+    if (Math.abs(deltaX) > 100) {
+        const direction = deltaX > 0 ? 'right' : 'left';
+        completeSwipe(direction);
+    } else {
+        // Karte zurücksetzen
+        card.style.transform = '';
+        card.style.opacity = '';
+    }
+}
+
+// Swipe per Button
+function swipeCard(direction) {
+    const card = document.querySelector('.swipe-card');
+    if (!card) return;
+    
+    completeSwipe(direction);
+}
+
+// Swipe abschließen
+function completeSwipe(direction) {
+    const card = document.querySelector('.swipe-card');
+    if (!card) return;
+    
+    const product = swipeProducts[currentSwipeIndex];
+    const isParticipating = direction === 'right';
+    
+    // Beteiligung in Daten aktualisieren
+    const expense = expenses.find(e => e.id === product.expenseId);
+    const productData = expense.products.find(p => p.id === product.productId);
+    
+    if (!productData._decided) {
+    productData._decided = {};
+}
+
+productData._decided[currentSwipePerson] = isParticipating;
+
+if (isParticipating) {
+    if (!productData.participants.includes(currentSwipePerson)) {
+        productData.participants.push(currentSwipePerson);
+    }
+} else {
+    productData.participants = productData.participants.filter(p => p !== currentSwipePerson);
+}
+
+    
+    // Animation
+    card.classList.add(direction === 'right' ? 'swiped-right' : 'swiped-left');
+    
+    // Nächste Karte nach Animation
+setTimeout(() => {
+    currentSwipeIndex++;
+    saveData();
+    updateParticipationView();  // ← Neu
+    renderSwipeCards();         // danach neu rendern
+}, 300);
+}
+
+// Fortschritt aktualisieren
+function updateProgress() {
+    const progressElement = document.getElementById('swipe-progress');
+    if (swipeProducts.length === 0) {
+        progressElement.textContent = '';
+        return;
+    }
+    
+    const progress = Math.min(currentSwipeIndex, swipeProducts.length);
+    progressElement.textContent = `${progress} von ${swipeProducts.length} Produkten`;
+}
+
+// Bestehende updateParticipationView Funktion erweitern
+const originalUpdateParticipationView = updateParticipationView;
+updateParticipationView = function() {
+    originalUpdateParticipationView();
+    
+if (currentSwipeMode === 'swipe') {
+    const select = document.getElementById('swipe-person-select');
+    if (!select.value) {
+        // wenn keine Person gewählt ist → sauber rendern
+        currentSwipePerson = '';
+        swipeProducts = [];
+        currentSwipeIndex = 0;
+        renderSwipeCards();
+    }
+}
+
+};
 
 
 
